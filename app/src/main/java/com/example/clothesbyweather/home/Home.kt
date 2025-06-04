@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
+import com.example.clothesbyweather.ui.theme.shapes
 
 @Composable
 fun Home(modifier: Modifier) {
@@ -42,7 +43,8 @@ fun Home(modifier: Modifier) {
                     onClick = {},
                     modifier = Modifier
                         .background(
-                            color = MaterialTheme.colorScheme.tertiaryContainer
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
+                            shape = MaterialTheme.shapes.medium
                         )
                         .padding(14.dp)
                         .weight(1f)
@@ -58,7 +60,8 @@ fun Home(modifier: Modifier) {
                     onClick = {},
                     modifier = Modifier
                         .background(
-                            color = MaterialTheme.colorScheme.primaryContainer
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.medium
                         )
                         .padding(14.dp)
                         .weight(1f)

@@ -269,9 +269,10 @@ fun ClothesByWeatherTheme(
   }
 
   MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
+      colorScheme = colorScheme,
+      typography = AppTypography,
+      shapes = shapes,
+      content = content
   )
 }
 
