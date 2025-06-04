@@ -3,7 +3,6 @@ package com.example.clothesbyweather.ui.home
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +34,7 @@ fun Home(modifier: Modifier) {
                 style = MaterialTheme.typography.bodyMedium
             )
             ClothesInfo()
+            WeatherInfo(modifier)
             PlaceInfo()
         }
     }
@@ -47,6 +47,6 @@ fun Home(modifier: Modifier) {
 @Composable
 fun HomePreview() {
     ClothesByWeatherTheme {
-        Home(modifier = Modifier.fillMaxSize())
+        Home(modifier = Modifier)
     }
 }
