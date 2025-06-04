@@ -39,23 +39,7 @@ fun Home(modifier: Modifier) {
             )
             RecommendedClothes()
 
-            Row{
-                TextButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .padding(14.dp)
-                        .weight(1f)
-                ) {
-                    Text(
-                        text = "📍후암동",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-            }
+            PlaceInfo()
         }
     }
 }
