@@ -37,23 +37,7 @@ fun Home(modifier: Modifier) {
                 modifier = Modifier.padding(top = 23.dp, bottom = 48.dp),
                 style = MaterialTheme.typography.bodyMedium
             )
-            Row{
-                TextButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.tertiaryContainer,
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .padding(14.dp)
-                        .weight(1f)
-                ) {
-                    Text(
-                        text = "⭐ 민소매, 반팔, 반바지, 원피스",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
-            }
+            RecommendedClothes()
 
             Row{
                 TextButton(
