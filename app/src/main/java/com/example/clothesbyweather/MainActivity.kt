@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
-import com.example.clothesbyweather.home.Home
+import com.example.clothesbyweather.ui.home.Home
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.example.clothesbyweather.home
+package com.example.clothesbyweather.ui.home
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.background
@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
-import com.example.clothesbyweather.ui.theme.shapes
 
 @Composable
 fun Home(modifier: Modifier) {
@@ -55,6 +54,7 @@ fun Home(modifier: Modifier) {
                     )
                 }
             }
+
             Row{
                 TextButton(
                     onClick = {},
