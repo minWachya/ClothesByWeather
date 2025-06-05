@@ -1,4 +1,4 @@
-package com.example.clothesbyweather
+package com.example.clothesbyweather.ui.home
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.os.Bundle
@@ -11,15 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
-import com.example.clothesbyweather.ui.home.Home
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ClothesByWeatherTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(modifier = Modifier.Companion.fillMaxSize()) {
                     Home(
                         modifier = Modifier
                     )
