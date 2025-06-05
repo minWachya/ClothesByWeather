@@ -1,12 +1,13 @@
 package com.example.clothesbyweather.data.remote.service
 
+import com.example.clothesbyweather.BuildConfig
 import com.example.clothesbyweather.data.remote.entity.response.HomeResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface HomeService {
-    @GET("getVilageFcst?serviceKey=zDDR5SlQcxjP8%2BKOJn1fWiI1p6aU3XGaeplQAyw%2FtFql6yge3CMoC3VcC2w94fxDCzgLNKyreLOBZtUgz1cq%2Bg%3D%3D")
+    @GET("getVilageFcst?serviceKey=${BuildConfig.SERVICE_KEY}")
     suspend fun getHome(
         @Query("numOfRows") numOfRows : Int,    // 한 페이지 경과 수
         @Query("pageNo") pageNo : Int,          // 페이지 번호
