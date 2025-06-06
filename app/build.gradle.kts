@@ -5,6 +5,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 val localProperties = Properties()
@@ -70,8 +73,11 @@ dependencies {
     implementation(libs.ui.text.google.fonts)
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.lifecycle.viewmodel.compose)
+    ksp(libs.hilt.android.ksp)
     //retrofit2
     implementation (libs.converter.gson)
     implementation (libs.retrofit)
-
+    // Google Location Service
+    implementation(libs.play.services.location)
 }
