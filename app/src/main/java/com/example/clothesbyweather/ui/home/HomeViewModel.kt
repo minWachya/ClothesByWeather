@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,18 +24,35 @@ class HomeViewModel @Inject constructor(
     val weatherList: StateFlow<List<HomeWeather>> = _weatherList.asStateFlow()
 
     init {
-        getHome()
+        val cal = Calendar.getInstance()
+        val cur = Locale.getDefault()
+        val baseDate = SimpleDateFormat("yyyyMMdd", cur).format(cal.time)
+        val hour = SimpleDateFormat("HH", cur).format(cal.time)
+        println(getBaseTime(hour.toInt()))
+        getHome(baseDate, getBaseTime(hour.toInt()))
     }
 
 
     // (한 페이지 결과 수 = 60, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
-    fun getHome() = viewModelScope.launch {
-        homeRepository.getHome(HomeRequest(60, 1, "JSON", "20250606", "1100", 55, 127))
+    fun getHome(baseDate: String, baseTime: String) = viewModelScope.launch {
+        homeRepository.getHome(HomeRequest(150, 1, "JSON", baseDate, baseTime, 55, 127))
             .onSuccess {
                 Log.d("mmm HomeViewModel", "api 연결 성공")
                 _weatherList.value = it.weatherList
             }.onFailure {
                 Log.d("mmm HomeViewModel", it.message?: "api 연결 실패")
             }
+    }
+
+    // Base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회)
+    private fun getBaseTime(hour: Int): String =  when {
+        hour < 2 -> "2300"
+        hour < 5 -> "0200"
+        hour < 8 -> "0500"
+        hour < 11 -> "0800"
+        hour < 14 -> "1100"
+        hour < 17 -> "1400"
+        hour < 20 -> "1700"
+        else -> "2000"
     }
 }

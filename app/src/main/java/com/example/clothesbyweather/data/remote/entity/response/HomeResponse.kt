@@ -48,9 +48,6 @@ data class WeatherItems(val item : ArrayList<WeatherItem>) {
                 precipitation = precipitation
             )
         }
-        for (weather in weatherList) {
-            println(weather)
-        }
         return weatherList
     }
 }
