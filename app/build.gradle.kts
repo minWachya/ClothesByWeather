@@ -5,9 +5,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
-    id("dagger.hilt.android.plugin")
-    kotlin("kapt")
 }
 
 val localProperties = Properties()
@@ -70,23 +67,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // GoogleFont
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.2")
-    // Hilt dependencies
-    implementation("com.google.dagger:hilt-android:2.55")
-    kapt("com.google.dagger:hilt-android-compiler:2.55")
-    // Hilt and ViewModel integration (optional)
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
-    //hilt life
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")
-    //hilt test
-    implementation("androidx.compose.compiler:compiler:1.5.15")
+    implementation(libs.ui.text.google.fonts)
+    // Hilt
+    implementation(libs.hilt.android)
     //retrofit2
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation (libs.converter.gson)
+    implementation (libs.retrofit)
 
-}
-
-//hilt +
-kapt {
-    correctErrorTypes = true
 }
