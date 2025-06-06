@@ -1,17 +1,63 @@
 package com.example.clothesbyweather.data.remote.entity.response
 
-data class HomeResponse(val response: WeatherResponse)
+import com.example.clothesbyweather.domain.entity.CategoryType
+import com.example.clothesbyweather.domain.entity.Home
+import com.example.clothesbyweather.domain.entity.HomeWeather
+import kotlin.Int
+
+data class HomeResponse(val response: WeatherResponse) {
+    fun toHome(): Home =
+        Home(weatherList = this.response.body.items.toWeatherList())
+}
 data class WeatherResponse(val header: WeatherHeader, val body: WeatherBody)
 data class WeatherHeader(val resultCode : Int, val resultMsg : String)
 data class WeatherBody(val dataType : String, val items : WeatherItems, val totalCount : Int)
-data class WeatherItems(val item : List<WeatherEntity>)
-data class WeatherEntity(
-    val baseDate: String,
-    val baseTime: String,
-    val category: String,
+
+data class WeatherItems(val item : ArrayList<WeatherItem>) {
+    fun toWeatherList(): ArrayList<HomeWeather> {
+        val weatherGroup = item.groupBy{ it.fcstTime }
+        var weatherList = arrayListOf<HomeWeather>()
+        weatherGroup.forEach { group ->
+            var pty = 0
+            var sky = 0
+            var temperature = 0
+            var humidity = 0
+            var precipitation = 0
+            group.value.forEach { weather ->
+                when(weather.category) {
+                    // 1시간 기온
+                    CategoryType.TMP -> temperature = weather.fcstValue.toInt()
+                    // 강수 확률
+                    CategoryType.POP -> precipitation = weather.fcstValue.toInt()
+                    // 강수 형태
+                    CategoryType.PTY -> pty = weather.fcstValue.toInt()
+                    // 습도
+                    CategoryType.REH -> humidity = weather.fcstValue.toInt()
+                    // 하늘 상태
+                    CategoryType.SKY -> sky = weather.fcstValue.toInt()
+                    else -> {}
+                }
+            }
+            weatherList += HomeWeather(
+                pty = pty,
+                sky = sky,
+                fcstDate = group.value[0].fcstDate,
+                fcstTime = group.value[0].fcstTime,
+                temperature = temperature,
+                humidity = humidity,
+                precipitation = precipitation
+            )
+        }
+        for (weather in weatherList) {
+            println(weather)
+        }
+        return weatherList
+    }
+}
+
+data class WeatherItem(
+    val category: CategoryType,
     val fcstDate: String,
     val fcstTime: String,
     val fcstValue: String,
-    val nx: Int,
-    val ny: Int
 )

@@ -8,18 +8,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.clothesbyweather.data.remote.repository.HomeRepository
 import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
 
 @Composable
-fun Home(modifier: Modifier) {
-    val weatherViewModel: HomeViewModel = viewModel()
-    weatherViewModel.getHome()
+fun HomeScreen(
+    modifier: Modifier,
+    weatherViewModel: HomeViewModel = viewModel()) {
+    val weatherList by weatherViewModel.weatherList.collectAsStateWithLifecycle()
 
     Surface(
         color = MaterialTheme.colorScheme.surface
@@ -39,7 +44,7 @@ fun Home(modifier: Modifier) {
                 style = MaterialTheme.typography.bodyMedium
             )
             ClothesInfo()
-            WeatherInfo(modifier)
+            WeatherInfo(modifier = modifier, weatherList = weatherList)
             PlaceInfo()
         }
     }
@@ -52,6 +57,6 @@ fun Home(modifier: Modifier) {
 @Composable
 fun HomePreview() {
     ClothesByWeatherTheme {
-        Home(modifier = Modifier)
+        HomeScreen(modifier = Modifier)
     }
 }

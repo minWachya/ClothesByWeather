@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ClothesByWeatherTheme {
                 Surface(modifier = Modifier.Companion.fillMaxSize()) {
-                    Home(
+                    HomeScreen(
                         modifier = Modifier
                     )
                 }
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 fun MainPreview() {
     ClothesByWeatherTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            Home(
+            HomeScreen(
                 modifier = Modifier
             )
         }
