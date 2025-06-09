@@ -30,6 +30,6 @@ data class HomeWeather(
     val time: String
         get() {
             val hour = fcstTime.substring(0..1).toInt()
-            return if(hour < 12) "오전 ${hour}시" else "오후 ${hour}시"
+            return if(hour < 12) "오전 ${hour}시" else "오후 ${hour-12}시"
         }
 }

@@ -70,7 +70,7 @@ private fun WeatherElement(modifier: Modifier, weather: HomeWeather) {
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
-            text = "☂️${weather.precipitation}%",
+            text = "☂️ ${weather.precipitation}%",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
