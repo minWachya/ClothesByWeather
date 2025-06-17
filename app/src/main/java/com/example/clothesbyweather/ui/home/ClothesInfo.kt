@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ClothesInfo() {
+fun ClothesInfo(clothesByWeather: String) {
     Row{
         TextButton(
             onClick = {},
@@ -24,7 +24,7 @@ fun ClothesInfo() {
                 .weight(1f)
         ) {
             Text(
-                text = "⭐ 민소매, 반팔, 반바지, 원피스",
+                text = "⭐ ${clothesByWeather}",
                 style = MaterialTheme.typography.titleMedium,
             )
         }

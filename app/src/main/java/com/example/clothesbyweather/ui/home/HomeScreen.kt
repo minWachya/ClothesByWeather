@@ -25,6 +25,7 @@ fun HomeScreen(
     val weatherList by weatherViewModel.weatherList.collectAsStateWithLifecycle()
     val curTemperature by weatherViewModel.curTemperature.collectAsStateWithLifecycle()
     val curWeather by weatherViewModel.curWeather.collectAsStateWithLifecycle()
+    val clothesByWeather by weatherViewModel.clothesByWeather.collectAsStateWithLifecycle()
 
     Surface(
         color = MaterialTheme.colorScheme.surface
@@ -43,7 +44,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(top = 23.dp, bottom = 48.dp),
                 style = MaterialTheme.typography.bodyMedium
             )
-            ClothesInfo()
+            ClothesInfo(clothesByWeather)
             WeatherInfo(modifier = modifier, weatherList = weatherList)
             PlaceInfo()
         }

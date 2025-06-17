@@ -1,5 +1,6 @@
 package com.example.clothesbyweather.ui.home
 
+import android.health.connect.datatypes.units.Temperature
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,6 +27,8 @@ class HomeViewModel @Inject constructor(
     val curTemperature: StateFlow<Int> = _curTemperature.asStateFlow()
     private val _curWeather = MutableStateFlow<String>("")
     val curWeather: StateFlow<String> = _curWeather.asStateFlow()
+    private val _clothesByWeather = MutableStateFlow<String>("")
+    val clothesByWeather: StateFlow<String> = _clothesByWeather.asStateFlow()
 
     init {
         val cal = Calendar.getInstance()
@@ -40,12 +43,10 @@ class HomeViewModel @Inject constructor(
     fun getHome(baseDate: String, baseTime: String) = viewModelScope.launch {
         homeRepository.getHome(HomeRequest(150, 1, "JSON", baseDate, baseTime, 55, 127))
             .onSuccess {
-                Log.d("mmm HomeViewModel", "api 연결 성공")
                 _weatherList.value = it.weatherList
                 _curTemperature.value = it.weatherList[0].temperature
                 _curWeather.value = getCurWeather(it.weatherList[0].weatherEmoji)
-                Log.d("mmm HomeViewModel1", "${it.weatherList[0].temperature}")
-                Log.d("mmm HomeViewModel1", getCurWeather(it.weatherList[0].weatherEmoji))
+                _clothesByWeather.value = getClothesByWeather(it.weatherList[0].temperature)
             }.onFailure {
                 Log.d("mmm HomeViewModel", it.message?: "api 연결 실패")
             }
@@ -70,5 +71,16 @@ class HomeViewModel @Inject constructor(
         "☀" -> "맑음"
         "🌤" -> "구름 많음"
         else -> "흐림"
+    }
+
+    private fun getClothesByWeather(temperature: Int): String = when {
+        temperature <= 4 -> "패딩, 두꺼운 코트, 목도리, 기모 제품"
+        temperature <= 8 -> "코트, 가죽 자켓, 히트텍, 니트"
+        temperature <= 11 -> "자켓, 트렌치 코트, 니트, 청바지"
+        temperature <= 16 -> "자켓, 가디건, 청바지, 면바지"
+        temperature <= 19 -> "얇은 니트, 맨투맨, 가디건, 청바지"
+        temperature <= 22 -> "얇은 가디건, 긴팔, 면바지, 청바지"
+        temperature <= 27 -> "반팔, 얇은 셔츠, 반바지, 면바지"
+        else -> "민소매, 반팔, 반바지, 원피스"
     }
 }
