@@ -22,6 +22,10 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private val _weatherList = MutableStateFlow<List<HomeWeather>>(emptyList())
     val weatherList: StateFlow<List<HomeWeather>> = _weatherList.asStateFlow()
+    private val _curTemperature = MutableStateFlow<Int>(0)
+    val curTemperature: StateFlow<Int> = _curTemperature.asStateFlow()
+    private val _curWeather = MutableStateFlow<String>("")
+    val curWeather: StateFlow<String> = _curWeather.asStateFlow()
 
     init {
         val cal = Calendar.getInstance()
@@ -38,6 +42,10 @@ class HomeViewModel @Inject constructor(
             .onSuccess {
                 Log.d("mmm HomeViewModel", "api 연결 성공")
                 _weatherList.value = it.weatherList
+                _curTemperature.value = it.weatherList[0].temperature
+                _curWeather.value = getCurWeather(it.weatherList[0].weatherEmoji)
+                Log.d("mmm HomeViewModel1", "${it.weatherList[0].temperature}")
+                Log.d("mmm HomeViewModel1", getCurWeather(it.weatherList[0].weatherEmoji))
             }.onFailure {
                 Log.d("mmm HomeViewModel", it.message?: "api 연결 실패")
             }
@@ -53,5 +61,14 @@ class HomeViewModel @Inject constructor(
         hour < 17 -> "1400"
         hour < 20 -> "1700"
         else -> "2000"
+    }
+
+    private fun getCurWeather(weatherEmoji: String): String =  when(weatherEmoji) {
+        "🌧" -> "비/소나기"
+        "🌨" -> "비/눈"
+        "❄" -> "눈"
+        "☀" -> "맑음"
+        "🌤" -> "구름 많음"
+        else -> "흐림"
     }
 }

@@ -1,5 +1,6 @@
 package com.example.clothesbyweather.ui.home
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ fun HomeScreen(
     modifier: Modifier,
     weatherViewModel: HomeViewModel = viewModel()) {
     val weatherList by weatherViewModel.weatherList.collectAsStateWithLifecycle()
+    val curTemperature by weatherViewModel.curTemperature.collectAsStateWithLifecycle()
+    val curWeather by weatherViewModel.curWeather.collectAsStateWithLifecycle()
 
     Surface(
         color = MaterialTheme.colorScheme.surface
@@ -32,11 +35,11 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "25°",
+                text = "${curTemperature}°",
                 style = MaterialTheme.typography.headlineLarge
             )
             Text(
-                text = "맑음",
+                text = curWeather,
                 modifier = Modifier.padding(top = 23.dp, bottom = 48.dp),
                 style = MaterialTheme.typography.bodyMedium
             )
