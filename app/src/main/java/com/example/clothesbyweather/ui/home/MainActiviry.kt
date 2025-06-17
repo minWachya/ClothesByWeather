@@ -1,29 +1,28 @@
-package com.example.clothesbyweather
+package com.example.clothesbyweather.ui.home
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
-import com.example.clothesbyweather.ui.theme.bodyFontFamily
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ClothesByWeatherTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android, 안뇽하세여",
-                        modifier = Modifier.padding(innerPadding)
+                Surface(modifier = Modifier.Companion.fillMaxSize()) {
+                    HomeScreen(
+                        modifier = Modifier
                     )
                 }
             }
@@ -31,19 +30,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Preview(
+    uiMode = UI_MODE_NIGHT_NO,
+    showBackground = true
+)
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier,
-        fontFamily = bodyFontFamily
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
+fun MainPreview() {
     ClothesByWeatherTheme {
-        Greeting("Android, 안뇽")
+        Surface(modifier = Modifier.fillMaxSize()) {
+            HomeScreen(
+                modifier = Modifier
+            )
+        }
     }
 }

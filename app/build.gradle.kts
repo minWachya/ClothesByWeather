@@ -1,8 +1,17 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
+
+val localProperties = Properties()
+localProperties.load(FileInputStream(rootProject.file("local.properties")))
 
 android {
     namespace = "com.example.clothesbyweather"
@@ -16,6 +25,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SERVICE_KEY", "${localProperties["service.key"]}")
     }
 
     buildTypes {
@@ -36,6 +47,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -58,5 +70,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // GoogleFont
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.2")
+    implementation(libs.ui.text.google.fonts)
+    // Hilt
+    implementation(libs.hilt.android)
+    implementation(libs.lifecycle.viewmodel.compose)
+    ksp(libs.hilt.android.ksp)
+    //retrofit2
+    implementation (libs.converter.gson)
+    implementation (libs.retrofit)
+    // Google Location Service
+    implementation(libs.play.services.location)
 }
