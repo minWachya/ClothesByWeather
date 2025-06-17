@@ -14,10 +14,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.clothesbyweather.domain.entity.HomeWeather
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
 @Composable
 fun WeatherInfo(modifier: Modifier, weatherList: List<HomeWeather>) {
+    val cal = Calendar.getInstance()
+    val cur = Locale.getDefault()
+    val curDate = SimpleDateFormat("M/d", cur).format(cal.time)
+
     Column(
         modifier = modifier
             .padding(vertical = 24.dp)
@@ -27,7 +34,7 @@ fun WeatherInfo(modifier: Modifier, weatherList: List<HomeWeather>) {
     ) {
         Text(
             modifier = modifier.padding(16.dp, 18.dp, 16.dp, 0.dp),
-            text = "6/4",
+            text = curDate,
             style = MaterialTheme.typography.titleMedium
         )
         LazyRow(

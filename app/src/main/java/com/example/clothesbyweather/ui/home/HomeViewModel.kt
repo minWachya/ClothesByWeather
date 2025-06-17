@@ -28,7 +28,6 @@ class HomeViewModel @Inject constructor(
         val cur = Locale.getDefault()
         val baseDate = SimpleDateFormat("yyyyMMdd", cur).format(cal.time)
         val hour = SimpleDateFormat("HH", cur).format(cal.time)
-        println(getBaseTime(hour.toInt()))
         getHome(baseDate, getBaseTime(hour.toInt()))
     }
 
