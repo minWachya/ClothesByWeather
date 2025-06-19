@@ -1,17 +1,33 @@
 package com.example.clothesbyweather.ui.home
 
-import android.health.connect.datatypes.units.Temperature
+import android.Manifest
+import android.app.Application
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clothesbyweather.data.remote.entity.request.HomeRequest
 import com.example.clothesbyweather.data.remote.repository.HomeRepositoryImpl
 import com.example.clothesbyweather.domain.entity.HomeWeather
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -29,6 +45,8 @@ class HomeViewModel @Inject constructor(
     val curWeather: StateFlow<String> = _curWeather.asStateFlow()
     private val _clothesByWeather = MutableStateFlow<String>("")
     val clothesByWeather: StateFlow<String> = _clothesByWeather.asStateFlow()
+    private val _address = MutableStateFlow<String>("주소 가져오는 중...")
+    val address: StateFlow<String> = _address.asStateFlow()
 
     init {
         val cal = Calendar.getInstance()
@@ -82,5 +100,42 @@ class HomeViewModel @Inject constructor(
         temperature <= 22 -> "얇은 가디건, 긴팔, 면바지, 청바지"
         temperature <= 27 -> "반팔, 얇은 셔츠, 반바지, 면바지"
         else -> "민소매, 반팔, 반바지, 원피스"
+    }
+
+    private fun getAddress(context: Context, lat: Double, lng: Double): String = try {
+        val geocoder = Geocoder(context, Locale.KOREA)
+        val address = geocoder.getFromLocation(lat, lng, 1) as List<Address>
+        address[0].thoroughfare
+    } catch (e: IOException) {
+        "주소 다시 가져오기"
+    }
+
+    fun getCurrentLocation(context: Context) {
+        var fusedLocationClient: FusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(context)
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            _address.value = "권한 설정 필요"
+            return
+        }
+
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
+            override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
+            override fun isCancellationRequested() = false
+        })
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    val lat = location.latitude
+                    val lon = location.longitude
+                    _address.value = getAddress(context, lat, lon)
+                }
+            }
     }
 }

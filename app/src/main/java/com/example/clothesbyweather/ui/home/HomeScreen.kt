@@ -1,6 +1,5 @@
 package com.example.clothesbyweather.ui.home
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +8,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,6 +27,12 @@ fun HomeScreen(
     val curTemperature by weatherViewModel.curTemperature.collectAsStateWithLifecycle()
     val curWeather by weatherViewModel.curWeather.collectAsStateWithLifecycle()
     val clothesByWeather by weatherViewModel.clothesByWeather.collectAsStateWithLifecycle()
+    val address by weatherViewModel.address.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        weatherViewModel.getCurrentLocation(context)
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.surface
@@ -46,7 +53,10 @@ fun HomeScreen(
             )
             ClothesInfo(clothesByWeather)
             WeatherInfo(modifier = modifier, weatherList = weatherList)
-            PlaceInfo()
+            PlaceInfo(
+                address = address,
+                getAddress = { weatherViewModel.getCurrentLocation(context) }
+            )
         }
     }
 }
