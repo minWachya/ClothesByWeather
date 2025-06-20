@@ -80,4 +80,6 @@ dependencies {
     implementation (libs.retrofit)
     // Google Location Service
     implementation(libs.play.services.location)
+    // Permission
+    implementation(libs.accompanist.permissions)
 }

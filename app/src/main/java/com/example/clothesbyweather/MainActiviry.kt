@@ -1,15 +1,19 @@
-package com.example.clothesbyweather.ui.home
+package com.example.clothesbyweather
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.clothesbyweather.ui.home.HomeScreen
+import com.example.clothesbyweather.ui.permission.PermissionRequestScreen
 import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,9 +25,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ClothesByWeatherTheme {
                 Surface(modifier = Modifier.Companion.fillMaxSize()) {
-                    HomeScreen(
-                        modifier = Modifier
-                    )
+//                    HomeScreen(
+//                        modifier = Modifier
+//                    )
+                    PermissionRequestScreen()
                 }
             }
         }

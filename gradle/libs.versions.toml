@@ -16,6 +16,7 @@ hiltLifecycle = "2.9.1"
 retrofit = "2.9.0"
 location = "21.3.0"
 ksp = "2.0.21-1.0.27"
+permission = "0.37.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,7 @@ lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "location" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "permission" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

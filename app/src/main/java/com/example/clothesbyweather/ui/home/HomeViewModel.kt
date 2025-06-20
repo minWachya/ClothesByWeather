@@ -1,27 +1,24 @@
 package com.example.clothesbyweather.ui.home
 
 import android.Manifest
-import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clothesbyweather.data.remote.entity.request.HomeRequest
 import com.example.clothesbyweather.data.remote.repository.HomeRepositoryImpl
 import com.example.clothesbyweather.domain.entity.HomeWeather
+import com.example.clothesbyweather.util.CoordinateConverter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
-import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,13 +50,14 @@ class HomeViewModel @Inject constructor(
         val cur = Locale.getDefault()
         val baseDate = SimpleDateFormat("yyyyMMdd", cur).format(cal.time)
         val hour = SimpleDateFormat("HH", cur).format(cal.time)
-        getHome(baseDate, getBaseTime(hour.toInt()))
+
+        getHome(baseDate, getBaseTime(hour.toInt()), 56, 131)
     }
 
 
     // (한 페이지 결과 수 = 60, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
-    fun getHome(baseDate: String, baseTime: String) = viewModelScope.launch {
-        homeRepository.getHome(HomeRequest(150, 1, "JSON", baseDate, baseTime, 55, 127))
+    private fun getHome(baseDate: String, baseTime: String, nx: Int, ny: Int) = viewModelScope.launch {
+        homeRepository.getHome(HomeRequest(150, 1, "JSON", baseDate, baseTime, nx, ny))
             .onSuccess {
                 _weatherList.value = it.weatherList
                 _curTemperature.value = it.weatherList[0].temperature
@@ -134,6 +132,8 @@ class HomeViewModel @Inject constructor(
                 if (location != null) {
                     val lat = location.latitude
                     val lon = location.longitude
+                    val place = CoordinateConverter().convertToXy(lat = lat, lon = lon)
+                    Log.d("mmm place", "${place.nx}, ${place.ny}")
                     _address.value = getAddress(context, lat, lon)
                 }
             }
