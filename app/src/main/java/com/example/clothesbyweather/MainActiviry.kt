@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 //                    HomeScreen(
 //                        modifier = Modifier
 //                    )
-                    PermissionRequestScreen()
+                    PermissionRequestScreen(modifier = Modifier)
                 }
             }
         }

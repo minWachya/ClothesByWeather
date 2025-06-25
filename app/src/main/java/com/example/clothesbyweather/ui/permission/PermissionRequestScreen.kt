@@ -7,8 +7,8 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +18,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +36,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PermissionRequestScreen() {
+fun PermissionRequestScreen(modifier: Modifier) {
     val permissionState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -51,45 +52,88 @@ fun PermissionRequestScreen() {
         )
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    Surface(
+        color = MaterialTheme.colorScheme.surface
     ) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(permissionList) { permissionInfo ->
-                PermissionItem(
-                    permissionInfo = permissionInfo
-                )
-            }
-        }
-
-        if (permissionState.allPermissionsGranted) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .animateContentSize()
+                .padding(vertical = 24.dp, horizontal = 16.dp),
+        ) {
+            Text(
+                text = "정확한 날씨 정보를 위해\n아래의 권한을 허용해주세요.",
+                modifier = modifier.padding(vertical = 20.dp, horizontal = 20.dp),
+                style = MaterialTheme.typography.titleLarge
+            )
+            LazyColumn(
+                modifier = modifier
+                    .weight(1F)
             ) {
-                Text(text = "설정 완료", modifier = Modifier.background(Color.Transparent))
+                items(permissionList) { permissionInfo ->
+                    PermissionItem(
+                        permissionInfo = permissionInfo
+                    )
+                }
             }
-        }
-        else if(permissionState.shouldShowRationale) {
-            Text("정확한 날씨 정보를 얻기 위해 위치 정보가 꼭 필요합니다.")
-            val context = LocalContext.current
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", context.packageName, null)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            Button(onClick = { context.startActivity(intent) }) {
-                Text("직접 권한 설정하기")
-            }
-        }
-        else {
-            Button(onClick = { permissionState.launchMultiplePermissionRequest() }) {
-                Text("권한 설정하기")
+
+            if (permissionState.allPermissionsGranted) {
+                Row(modifier = modifier.padding(16.dp)) {
+                    Text(text = "설정 완료", modifier = modifier.background(Color.Transparent))
+                }
+            } else if (permissionState.shouldShowRationale) {
+                Text(
+                    text = "정확한 날씨 정보를 얻기 위해 위치 정보가 꼭 필요합니다.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+                val context = LocalContext.current
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+
+                Button(
+                    modifier = modifier
+                        .padding(vertical = 20.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    onClick = { context.startActivity(intent) }
+                ) {
+                    Text(
+                        text = "직접 권한 설정하기",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+            } else {
+                Button(
+                    modifier = modifier
+                        .padding(vertical = 20.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    onClick = { permissionState.launchMultiplePermissionRequest() }
+                ) {
+                    Text(
+                        text = "권한 설정하기",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
             }
         }
     }
@@ -103,7 +147,7 @@ fun PermissionRequestScreen() {
 fun MainPreview() {
     ClothesByWeatherTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            PermissionRequestScreen()
+            PermissionRequestScreen(modifier = Modifier)
         }
     }
 }
