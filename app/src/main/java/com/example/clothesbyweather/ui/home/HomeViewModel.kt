@@ -1,6 +1,7 @@
 package com.example.clothesbyweather.ui.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Address
@@ -16,6 +17,7 @@ import com.example.clothesbyweather.util.CoordinateConverter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
@@ -44,14 +46,15 @@ class HomeViewModel @Inject constructor(
     val clothesByWeather: StateFlow<String> = _clothesByWeather.asStateFlow()
     private val _address = MutableStateFlow<String>("주소 가져오는 중...")
     val address: StateFlow<String> = _address.asStateFlow()
+    var baseDate: String
+    var baseTime: String
 
     init {
         val cal = Calendar.getInstance()
         val cur = Locale.getDefault()
-        val baseDate = SimpleDateFormat("yyyyMMdd", cur).format(cal.time)
+        baseDate = SimpleDateFormat("yyyyMMdd", cur).format(cal.time)
         val hour = SimpleDateFormat("HH", cur).format(cal.time)
-
-        getHome(baseDate, getBaseTime(hour.toInt()), 56, 131)
+        baseTime = getBaseTime(hour.toInt())
     }
 
 
@@ -100,42 +103,32 @@ class HomeViewModel @Inject constructor(
         else -> "민소매, 반팔, 반바지, 원피스"
     }
 
-    private fun getAddress(context: Context, lat: Double, lng: Double): String = try {
-        val geocoder = Geocoder(context, Locale.KOREA)
-        val address = geocoder.getFromLocation(lat, lng, 1) as List<Address>
-        address[0].thoroughfare
-    } catch (e: IOException) {
-        "주소 다시 가져오기"
+    @SuppressLint("MissingPermission")
+    fun getLastUserLocation(context: Context) {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+        fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
+            override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken = CancellationTokenSource().token
+            override fun isCancellationRequested(): Boolean = false
+        }).addOnSuccessListener { location ->
+            location?.let {
+                Log.d("mmm plae", "${it.latitude}, ${it.longitude}")
+                val place = CoordinateConverter().convertToXy(lat = it.latitude, lon = it.longitude)
+                getHome(baseDate, baseTime, place.nx, place.ny)
+                _address.value = getAddress(context, it.latitude, it.longitude)
+            }
+        }
+            .addOnFailureListener { exception ->
+                Log.d("mmm plae", exception.message.toString())
+            }
     }
 
-    fun getCurrentLocation(context: Context) {
-        var fusedLocationClient: FusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(context)
-
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            _address.value = "권한 설정 필요"
-            return
-        }
-
-        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
-            override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
-            override fun isCancellationRequested() = false
-        })
-            .addOnSuccessListener { location ->
-                if (location != null) {
-                    val lat = location.latitude
-                    val lon = location.longitude
-                    val place = CoordinateConverter().convertToXy(lat = lat, lon = lon)
-                    Log.d("mmm place", "${place.nx}, ${place.ny}")
-                    _address.value = getAddress(context, lat, lon)
-                }
-            }
+    private fun getAddress(context: Context, lat: Double, lng: Double): String = try {
+        Log.d("mmm getAddress", "getAddress1")
+        val geocoder = Geocoder(context, Locale.KOREA)
+        val address = geocoder.getFromLocation(lat, lng, 1) as List<Address>
+        Log.d("mmm getAddress", address.toString())
+        address[0].thoroughfare
+    } catch (e: IOException) {
+        "주소 다시 불러오기"
     }
 }

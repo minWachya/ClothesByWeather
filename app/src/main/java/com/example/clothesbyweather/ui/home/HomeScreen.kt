@@ -1,6 +1,7 @@
 package com.example.clothesbyweather.ui.home
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,8 @@ fun HomeScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        weatherViewModel.getCurrentLocation(context)
+        Log.d("mmm HomeScreen", "들오옴")
+        weatherViewModel.getLastUserLocation(context)
     }
 
     Surface(
@@ -55,7 +57,8 @@ fun HomeScreen(
             WeatherInfo(modifier = modifier, weatherList = weatherList)
             PlaceInfo(
                 address = address,
-                getAddress = { weatherViewModel.getCurrentLocation(context) }
+                getAddress = { }
+//                getAddress = { weatherViewModel.getCurrentLocation(context) }
             )
         }
     }
