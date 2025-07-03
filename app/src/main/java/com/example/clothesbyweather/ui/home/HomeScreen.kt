@@ -29,12 +29,6 @@ fun HomeScreen(
     val curWeather by weatherViewModel.curWeather.collectAsStateWithLifecycle()
     val clothesByWeather by weatherViewModel.clothesByWeather.collectAsStateWithLifecycle()
     val address by weatherViewModel.address.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        Log.d("mmm HomeScreen", "들오옴")
-        weatherViewModel.getLastUserLocation(context)
-    }
 
     Surface(
         color = MaterialTheme.colorScheme.surface
