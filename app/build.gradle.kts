@@ -82,4 +82,6 @@ dependencies {
     implementation(libs.play.services.location)
     // Permission
     implementation(libs.accompanist.permissions)
+    // POI(for .xlsx)
+    implementation(libs.poi.ooxml)
 }
