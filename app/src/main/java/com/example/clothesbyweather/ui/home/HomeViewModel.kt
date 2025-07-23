@@ -6,7 +6,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
@@ -43,10 +42,8 @@ class HomeViewModel @Inject constructor(
     val curWeather: StateFlow<String> = _curWeather.asStateFlow()
     private val _clothesByWeather = MutableStateFlow<String>("")
     val clothesByWeather: StateFlow<String> = _clothesByWeather.asStateFlow()
-    private val _address = MutableStateFlow<String>("주소 가져오는 중...")
-    val address: StateFlow<String> = _address.asStateFlow()
-    var baseDate: String
-    var baseTime: String
+    private var baseDate: String
+    private var baseTime: String
 
     init {
         val cal = Calendar.getInstance()
@@ -55,7 +52,7 @@ class HomeViewModel @Inject constructor(
         val hour = SimpleDateFormat("HH", cur).format(cal.time)
         baseTime = getBaseTime(hour.toInt())
 
-        getLastUserLocation()
+        getLocation()
     }
 
 
@@ -105,7 +102,7 @@ class HomeViewModel @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLastUserLocation() {
+    private fun getLocation() {
         val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application.applicationContext)
         fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
             override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken = CancellationTokenSource().token
@@ -114,33 +111,10 @@ class HomeViewModel @Inject constructor(
             location?.let {
                 val place = CoordinateConverter().convertToXy(lat = it.latitude, lon = it.longitude)
                 getHome(baseDate, baseTime, place.nx, place.ny)
-                getAddress(it.latitude, it.longitude)
             }
         }
             .addOnFailureListener { exception ->
                 Log.d("mmm plae", exception.message.toString())
             }
-    }
-
-    private fun getAddress(lat: Double, lng: Double) = try {
-        val geocoder = Geocoder(application.applicationContext, Locale.KOREA)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            geocoder.getFromLocation(lat, lng, 1 ,object : Geocoder.GeocodeListener {
-                override fun onGeocode(addresses: MutableList<Address>) {
-                    _address.value = addresses[0].thoroughfare
-                }
-                override fun onError(errorMessage: String?) {
-                    super.onError(errorMessage)
-                }
-            })
-        }
-
-        else {
-            val address = geocoder.getFromLocation(lat, lng, 1) as List<Address>
-            _address.value = address[0].thoroughfare
-        }
-    } catch (e: IOException) {
-        "주소 다시 불러오기"
     }
 }

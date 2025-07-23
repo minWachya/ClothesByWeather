@@ -23,12 +23,14 @@ import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
 @Composable
 fun HomeScreen(
     modifier: Modifier,
-    weatherViewModel: HomeViewModel = viewModel()) {
+    weatherViewModel: HomeViewModel = viewModel(),
+    kakaoLocationViewModel: KakaoLocationViewModel = viewModel(),
+    ) {
     val weatherList by weatherViewModel.weatherList.collectAsStateWithLifecycle()
     val curTemperature by weatherViewModel.curTemperature.collectAsStateWithLifecycle()
     val curWeather by weatherViewModel.curWeather.collectAsStateWithLifecycle()
     val clothesByWeather by weatherViewModel.clothesByWeather.collectAsStateWithLifecycle()
-    val address by weatherViewModel.address.collectAsStateWithLifecycle()
+    val address by kakaoLocationViewModel.address.collectAsStateWithLifecycle()
 
     Surface(
         color = MaterialTheme.colorScheme.surface

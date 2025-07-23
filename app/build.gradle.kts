@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.clothesbyweather"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -27,6 +27,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "SERVICE_KEY", "${localProperties["service.key"]}")
+        buildConfigField("String", "KAKAO_REST_API_KEY", "${localProperties["kakao.rest.api.key"]}")
     }
 
     buildTypes {
@@ -82,6 +83,4 @@ dependencies {
     implementation(libs.play.services.location)
     // Permission
     implementation(libs.accompanist.permissions)
-    // POI(for .xlsx)
-    implementation(libs.poi.ooxml)
 }

@@ -1,6 +1,5 @@
 package com.example.clothesbyweather.data.remote.repository
 
-import android.util.Log
 import com.example.clothesbyweather.data.remote.datasource.HomeDataSource
 import com.example.clothesbyweather.data.remote.entity.request.HomeRequest
 import com.example.clothesbyweather.domain.entity.Home
