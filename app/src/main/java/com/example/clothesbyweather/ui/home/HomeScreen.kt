@@ -24,7 +24,6 @@ import com.example.clothesbyweather.ui.theme.ClothesByWeatherTheme
 fun HomeScreen(
     modifier: Modifier,
     weatherViewModel: HomeViewModel = viewModel(),
-//    kakaoLocationViewModel: KakaoLocationViewModel = viewModel(),
     ) {
     val weatherList by weatherViewModel.weatherList.collectAsStateWithLifecycle()
     val curTemperature by weatherViewModel.curTemperature.collectAsStateWithLifecycle()
@@ -53,8 +52,7 @@ fun HomeScreen(
             WeatherInfo(modifier = modifier, weatherList = weatherList)
             PlaceInfo(
                 address = address,
-                getAddress = { }
-//                getAddress = { weatherViewModel.getCurrentLocation(context) }
+                getAddress = { weatherViewModel.getCurrentLocation() }
             )
         }
     }

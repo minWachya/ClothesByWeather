@@ -143,7 +143,8 @@ class HomeViewModel @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    private fun getCurrentLocation() {
+    fun getCurrentLocation() {
+        _address.value = "주소 다시 가져오는 중..."
         val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application.applicationContext)
         fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
             override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken = CancellationTokenSource().token
