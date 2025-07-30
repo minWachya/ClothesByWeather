@@ -32,12 +32,16 @@ class KakaoLocationViewModel @Inject constructor(
     }
 
     private fun getKakaoLocations(x: String, y: String) = viewModelScope.launch {
-        kakaoLocationRepository.getKakaoLocation(x, y)
-            .onSuccess {
-                _address.value = it.locations[0].address.name
-            }.onFailure {
-                Log.d("mmm KakaoLocationViewModel", it.message?: "api 연결 실패")
-            }
+        val startTime = System.currentTimeMillis()
+            kakaoLocationRepository.getKakaoLocation(x, y)
+                .onSuccess {
+                    val endTime = System.currentTimeMillis()
+                    val elapsedTime = endTime - startTime
+                    Log.d("mmm kakao time", "$elapsedTime ms")
+                    _address.value = it.locations[0].address.name
+                }.onFailure {
+                    Log.d("mmm KakaoLocationViewModel", it.message?: "api 연결 실패")
+                }
     }
 
     @SuppressLint("MissingPermission")
