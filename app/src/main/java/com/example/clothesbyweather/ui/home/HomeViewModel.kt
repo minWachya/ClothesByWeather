@@ -1,17 +1,29 @@
 package com.example.clothesbyweather.ui.home
 
-import android.health.connect.datatypes.units.Temperature
+import android.annotation.SuppressLint
+import android.app.Application
+import android.location.Address
+import android.location.Geocoder
+import android.os.Build
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.example.clothesbyweather.data.remote.entity.request.HomeRequest
 import com.example.clothesbyweather.data.remote.repository.HomeRepositoryImpl
 import com.example.clothesbyweather.domain.entity.HomeWeather
+import com.example.clothesbyweather.util.CoordinateConverter
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -19,8 +31,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    application: Application,
     private val homeRepository: HomeRepositoryImpl,
-) : ViewModel() {
+) : AndroidViewModel(application) {
     private val _weatherList = MutableStateFlow<List<HomeWeather>>(emptyList())
     val weatherList: StateFlow<List<HomeWeather>> = _weatherList.asStateFlow()
     private val _curTemperature = MutableStateFlow<Int>(0)
@@ -29,19 +42,26 @@ class HomeViewModel @Inject constructor(
     val curWeather: StateFlow<String> = _curWeather.asStateFlow()
     private val _clothesByWeather = MutableStateFlow<String>("")
     val clothesByWeather: StateFlow<String> = _clothesByWeather.asStateFlow()
+    private val _address = MutableStateFlow<String>("주소 가져오는 중...")
+    val address: StateFlow<String> = _address.asStateFlow()
+
+    private var baseDate: String
+    private var baseTime: String
 
     init {
         val cal = Calendar.getInstance()
         val cur = Locale.getDefault()
-        val baseDate = SimpleDateFormat("yyyyMMdd", cur).format(cal.time)
+        baseDate = SimpleDateFormat("yyyyMMdd", cur).format(cal.time)
         val hour = SimpleDateFormat("HH", cur).format(cal.time)
-        getHome(baseDate, getBaseTime(hour.toInt()))
+        baseTime = getBaseTime(hour.toInt())
+
+        getLocation()
     }
 
 
     // (한 페이지 결과 수 = 60, 페이지 번호 = 1, 응답 자료 형식-"JSON", 발표 날싸, 발표 시각, 예보지점 좌표)
-    fun getHome(baseDate: String, baseTime: String) = viewModelScope.launch {
-        homeRepository.getHome(HomeRequest(150, 1, "JSON", baseDate, baseTime, 55, 127))
+    private fun getHome(baseDate: String, baseTime: String, nx: Int, ny: Int) = viewModelScope.launch {
+        homeRepository.getHome(HomeRequest(150, 1, "JSON", baseDate, baseTime, nx, ny))
             .onSuccess {
                 _weatherList.value = it.weatherList
                 _curTemperature.value = it.weatherList[0].temperature
@@ -82,5 +102,62 @@ class HomeViewModel @Inject constructor(
         temperature <= 22 -> "얇은 가디건, 긴팔, 면바지, 청바지"
         temperature <= 27 -> "반팔, 얇은 셔츠, 반바지, 면바지"
         else -> "민소매, 반팔, 반바지, 원피스"
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application.applicationContext)
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+            if(location == null) getCurrentLocation()
+            else {
+                val place = CoordinateConverter().convertToXy(lat = location.latitude, lon = location.longitude)
+                getHome(baseDate, baseTime, place.nx, place.ny)
+                getAddress(location.latitude, location.longitude)
+            }
+        }
+            .addOnFailureListener { exception ->
+                Log.d("mmm plae", exception.message.toString())
+            }
+    }
+
+    private fun getAddress(lat: Double, lng: Double) = try {
+        val geocoder = Geocoder(application.applicationContext, Locale.KOREA)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            geocoder.getFromLocation(lat, lng, 1 ,object : Geocoder.GeocodeListener {
+                override fun onGeocode(addresses: MutableList<Address>) {
+                    _address.value = addresses[0].thoroughfare
+                }
+                override fun onError(errorMessage: String?) {
+                    super.onError(errorMessage)
+                }
+            })
+        }
+
+        else {
+            val address = geocoder.getFromLocation(lat, lng, 1) as List<Address>
+            _address.value = address[0].thoroughfare
+        }
+    } catch (e: IOException) {
+        "주소 다시 불러오기"
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getCurrentLocation() {
+        _address.value = "주소 다시 가져오는 중..."
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application.applicationContext)
+        fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
+            override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken = CancellationTokenSource().token
+            override fun isCancellationRequested(): Boolean = false
+        }).addOnSuccessListener { location ->
+            location?.let {
+                val place = CoordinateConverter().convertToXy(lat = it.latitude, lon = it.longitude)
+                getHome(baseDate, baseTime, place.nx, place.ny)
+                getAddress(it.latitude, it.longitude)
+            }
+        }
+            .addOnFailureListener { exception ->
+                Log.d("mmm plae", exception.message.toString())
+            }
     }
 }

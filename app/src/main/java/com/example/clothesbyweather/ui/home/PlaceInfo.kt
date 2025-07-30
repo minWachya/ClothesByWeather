@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PlaceInfo() {
+fun PlaceInfo(address: String, getAddress: () -> Unit) {
     Row{
         TextButton(
-            onClick = {},
+            onClick = getAddress,
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.primaryContainer,
@@ -24,7 +24,7 @@ fun PlaceInfo() {
                 .weight(1f)
         ) {
             Text(
-                text = "📍후암동",
+                text = "📍$address",
                 style = MaterialTheme.typography.titleMedium,
             )
         }

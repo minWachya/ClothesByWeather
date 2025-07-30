@@ -9,13 +9,19 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class NormalType
+
     @Provides
     @Singleton
+    @NormalType
     fun providesOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -25,7 +31,8 @@ object RetrofitModule {
 
     @Provides
     @Singleton
-    fun providesRetrofit(okHttpClient: OkHttpClient): Retrofit =
+    @NormalType
+    fun providesRetrofit(@NormalType okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .baseUrl("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/")
             .client(okHttpClient)
